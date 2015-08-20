@@ -1,0 +1,370 @@
+
+/* 스타일은 포지션-마진-패딩-보더-백그라운드-너비-높이-좌표(상, 좌, 우, 하) 순서로 둘 것 */
+html, body
+{
+	margin:0px;
+	padding:0px;
+	background:#EEE;
+	
+	min-width:1200px;
+	min-height:840px;
+}
+
+input[type=text]
+{
+	width:120px;
+}
+
+#QIDtopToolBar
+{
+	position:fixed;
+	margin:0px;
+	padding:5px;
+	background-color:#222;
+	color:#FFF;
+	
+	height:28px;
+	top:0px;
+	left:0px;
+	right:0px;
+	
+	line-height:28px;
+}
+
+#QIDtopMenuBar
+{
+	position:fixed;
+	margin:0px;
+	background-color:#DDD;
+	
+	height:24px;
+	top:38px;
+	left:80px;
+	right:0px;
+	
+	line-height:24px;
+}
+
+#QIDtopMenuBar .contextMenuHeader
+{
+	padding-left:8px;
+	padding-right:8px;
+	
+	cursor:default;
+	display:inline-block;
+	float:left;
+	font-size:13px;
+}
+
+#QIDtopMenuBar .contextMenuHeader:hover
+{
+	background-color:#57A2F2;
+	color:#FFF;
+}
+
+#QIDleftToolBox
+{
+	position:fixed;
+	margin:0px;
+	padding:0px;
+	padding-top:24px;
+	background-color:#EEE;
+	
+	width:80px;
+	
+	top:38px;
+	left:0px;
+	bottom:30px;
+}
+
+#QIDleftToolBox .listItem
+{
+	display:block;
+	
+	padding:5px;
+	cursor:default;
+	font-size:13px;
+	margin:3px;
+	text-align:center;
+	border-radius:5px;
+}
+
+#QIDleftToolBox .listItem:hover
+{
+	background:#57A2F2;
+	color:#FFF;
+}
+
+#QIDrightCSSbar .listItemT
+{
+	display:block;
+	
+	padding:5px;
+	padding-left:10px;
+	
+	font-size:13px;
+	border-bottom:1px solid #DDD;
+}
+
+#QIDrolerX
+{
+	position:fixed;
+	background:url(../img/rolerX.png);
+	height:14px;
+	
+	top:62px;
+	left:94px;
+	right:300px;
+}
+
+#QIDrolerY
+{
+	position:fixed;
+	background:url(../img/rolerY.png);
+	width:14px;
+	
+	top:76px;
+	left:80px;
+	bottom:30px;
+}
+
+#QIDrolerC
+{
+	position:fixed;
+	background:#FFF;
+	width:14px;
+	height:14px;
+	
+	top:62px;
+	left:80px;
+}
+
+#QIDworkArea
+{
+	position:fixed;
+	top:76px;
+	left:94px;
+	right:300px;
+	bottom:30px;
+	background:#FFF;
+	
+	overflow:auto;
+}
+
+#QIDhiddenWorkArea
+{
+	position:fixed;
+	top:76px;
+	left:94px;
+	right:300px;
+	bottom:30px;
+	background:rgba(0,0,0,0.2);
+	
+	overflow:auto;
+	display:none;
+	z-index:999999;
+}
+
+#QIDdrawingMode
+{
+	float:left;
+}
+
+.QIDselectionBox
+{
+	position:absolute;
+	box-shadow:inset 0px 2px 0px rgba(55,121,241,0.5),inset 2px 0px 0px rgba(55,121,241,0.5),inset 0px -2px 0px rgba(55,121,241,0.5),inset -2px 0px 0px rgba(55,121,241,0.5);
+}
+
+.QIDivOuterX
+{
+	position:absolute;
+	box-shadow:inset 0px 1px 0px rgba(0,0,0,0.5),inset 1px 0px 0px rgba(0,0,0,0.5),inset 0px -1px 0px rgba(0,0,0,0.5),inset -1px 0px 0px rgba(0,0,0,0.5);
+	background:#FFF;
+	z-index:1;
+}
+
+/* 스타일은 포지션-마진-패딩-보더-백그라운드-너비-높이-좌표(상, 좌, 우, 하) 순서로 둘 것 */
+#QIDpropertyWindow
+{
+	position:fixed;
+	margin:0px
+	padding:10px;
+	border:1px solid #333;
+	background-color:#FFE97F;
+	width:200px;
+	height:180px;
+	display:none;
+}
+
+#webViewer, #webViewer2
+{
+	position:fixed;
+	top:76px;
+	left:94px;
+	right:300px;
+	bottom:30px;
+	background:#FFF;
+	box-shadow:
+	1px 1px 0px rgba(55,121,240,1),
+	-1px -1px 0px rgba(55,121,240,1),
+	1px -1px 0px rgba(55,121,240,1),
+	-1px 1px 0px rgba(55,121,240,1),
+	0px 0px 5px rgba(0,0,0,0.5);
+	display:none;
+	z-index:999999999;
+}
+#webViewer2
+{
+	top:62px;
+	left:1px;
+	right:1px;
+}
+
+#titleTitleArea
+{
+	color:#FFF;
+	position:absolute;
+	top:-24px;
+	left:6px;
+}
+
+#CLOSEBTN
+{
+	position:absolute;
+	right:5px;
+	top:-24px;
+	color:#FFF;
+}
+
+#webArea, #sourcearea
+{
+	position:absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+	bottom:0px;
+	border:0px;
+	width:100%;
+	height:100%;
+	overflow:auto;
+}
+
+#TARGETANCHOR
+{
+	position:absoulte;
+	top:50%;
+	left:50%;
+	width:200px;
+	height:120px;
+	margin-left:-100px;
+	margin-top:-60px;
+	box-shadow:2px 2px 0px #FFF, -2px -2px 0px #FFF, -2px 2px 0px #FFF, 2px -2px 0px #FFF, 0px 0px 5px rgba(0,0,0,0.5);
+}
+
+#QIDrightCSSbar
+{
+	position:fixed;
+	right:0px;
+	bottom:30px;
+	top:62px;
+	width:300px;
+	background:#EEE;
+}
+
+.blockspan
+{
+	width:120px;
+	display:inline-block;
+	text-align:right;
+	margin-right:10px;
+}
+
+.QIDinputstyle[type=text]
+{
+	border:none;
+	background:transparent;
+}
+
+.dividerstyle
+{
+	padding:5px;
+	background:#FDB;
+	border-bottom:1px solid #DDD;
+}
+
+
+.guide
+{
+	display: none; 
+	position: absolute; 
+	left: 0; 
+	top: 0; 
+}
+
+#guide-h
+{
+	border-top: 1px dashed #55f; 
+	width: 100%; 
+}
+
+#guide-v
+{
+	border-left: 1px dashed #55f; 
+	height: 100%; 
+}
+
+#QIDEditor
+{
+	position:fixed;
+	top:76px;
+	left:94px;
+	right:300px;
+	bottom:30px;
+}
+
+#SAVEAS
+{
+	width:400px;
+	height:120px;
+	border:1px solid #3478F1;
+	box-shadow:0px 0px 5px rgba(0,0,0,0.5);
+	position:fixed;
+	left:50%;
+	top:50%;
+	padding:10px;
+	margin-left:-200px;
+	margin-top:-80px;
+}
+
+/* Content */
+.li-div:after {content:"Div";}
+.li-span:after {content:"Span";}
+.li-label:after {content:"Label";}
+.li-button:after {content:"Button";}
+.li-radio:after {content:"Radio";}
+.li-checkbox:after {content:"Checkbox";}
+.li-text:after {content:"Text";}
+.li-textarea:after {content:"Textarea";}
+.li-select:after {content:"Select";}
+
+.li-div:after {content:"Div";}
+.li-span:after {content:"Span";}
+.li-label:after {content:"Label";}
+.li-form-button:after {content:"Button";}
+.li-form-radio:after {content:"Radio";}
+.li-form-checkbox:after {content:"Checkbox";}
+.li-form-text:after {content:"Text";}
+.li-textarea:after {content:"Textarea";}
+.li-other-select:after {content:"Select";}
+
+.li-div { background:rgba(255,255,0,0.5);}
+.li-span { background:rgba(255,192,255,0.5);}
+.li-label { background:rgba(255,255,192,0.5);}
+.li-button { background:rgba(192,255,255,0.5);}
+.li-form-button { background:rgba(192,255,255,0.5);}
+.li-form-radio { background:rgba(255,255,0,0.5);}
+.li-form-checkbox { background:rgba(255,255,0,0.5);}
+.li-form-text { background:rgba(255,255,0,0.5);}
+.li-textarea { background:rgba(255,255,0,0.5);}
+.li-other-select { background:rgba(255,255,0,0.5);}
