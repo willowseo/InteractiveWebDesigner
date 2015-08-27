@@ -1,5 +1,51 @@
 <?PHP
 header("content-type:text/html; charset=utf-8");
+
+$docDefault = '<!DOCUMENT html> <head> <title>Untitled Document</title> <script src="//code.jquery.com/jquery-1.11.3.min.js"> </script> <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"> </script> <script src="//wli.kr/whtml/jquery-ui.min.js"> </script> <link rel="stylesheet" type="text/css" href="//wli.kr/whtml/jquery-ui.css"> </head> <body>';
+$docDefaultEnd = '</body> </html>';
+$fileinter = $_POST["file"];
+$ifoverwrite = $_POST['overw'];
+
+$sdir = "./saveFiles/";
+if(file_exists($sdir))
+{
+	
+}
+else
+{
+	mkdir($sdir);
+}
+	
+if($_GET['mode'] == "saveFile")
+{
+	$filedata = $docDefault.$fileinter.$docDefaultEnd;
+	$filename = $_POST["filename"];
+	
+	$log_file = fopen($sdir.str_replace(".html","",$filename).".html", "w"); 
+
+	fwrite($log_file, $filedata);  
+	fclose($log_file);
+}
+else if($_GET['mode'] == "getFileList")
+{
+	$sdir = scandir($sdir);
+	foreach($sdir as $key=>$val)
+	{
+		if($val == "." || $val == "..") continue;
+		?>
+<div class="flist"><?=$val?></div>
+		<?
+	}
+	exit();
+}
+else if($_GET['mode'] == "getFile")
+{
+	$fopen = fopen($sdir.$_GET['filename'],"rb");
+	$cont = fread($fopen, filesize($sdir.$_GET['filename']));
+	echo $cont;
+	fclose($fopen);
+	exit();
+}
 ?>
 <!DOCUMENT html>
 <html>
@@ -59,6 +105,9 @@ header("content-type:text/html; charset=utf-8");
 			#quickEditor {width:100%; height:100%;}
 			.hRule{position:absolute;}
 			.corner{position:absolute;}
+			
+			.flist {padding:3px; cursor:default; padding-left:28px;}
+			.flist:hover {box-shadow:inset 1px 1px 0px rgba(55,121,241,0.3), inset -1px -1px 0px rgba(55,121,241,0.3); background:rgba(55,121,241,0.1);}
 		</style>
 	</head>
 	<body>
@@ -89,6 +138,33 @@ header("content-type:text/html; charset=utf-8");
 		<div id="htmlPreview" style="position:fixed; right:300px; left:0px; top:40px; bottom:30px; background:#FFF; display:none;">
 			<div id="previewPagePreset">
 			
+			</div>
+		</div>
+		<div id="saveAs" style="position:fixed; left:50%; top:50%; width:600px; height:340px; margin-top:-170px; margin-left:-300px; box-shadow:2px 2px 0px #000, -2px -2px 0px #000, -2px 2px 0px #000, 2px -2px 0px #000; z-index:1000000000;">
+			<div style="height:30px; background:#EEE; line-height:30px; text-align:center;">
+				Save Project
+				<div style="float:right; width:30px; height:30px; display:inline-block; cursor:default; text-align:center;">
+					X
+				</div>
+			</div>
+			<script>
+				<?
+					$fname = __FILE__;
+					$fname = substr($fname, strrpos($fname, "\\")+1);
+				?>
+				$.get("./<?=$fname?>?mode=getFileList").done(function(e){
+					$("#filelist").html(e);
+				});
+			</script>
+			<div style="height:280px;">
+			<div style="background:#FFF;float:left; height:280px; width:420px;" id="filelist">
+			</div>
+			<div style="width:180px; float:left; height:280px; background:#FFF;">
+			</div>
+			</div>
+			<div style="height:20px; background:#EEE; line-height:20px; padding:5px;">
+				<input id="FNAME" type="text" class="PRESETINPUT" style="width:500px;"/>
+				<button id="FFF" onclick="saveProc();">save</button>
 			</div>
 		</div>
 		<div id="headTitleBar" style="position:fixed; left:0px; top:0px; right:0px; height:30px; padding:5px; margin:0px; background:#EEE;">
@@ -356,6 +432,24 @@ header("content-type:text/html; charset=utf-8");
 			var tmpIDCOUNT = 0;
 			var curTab = 1;
 			var targetID = "";
+			function saveProc()
+			{
+				$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
+				$(".objectOL").find(".ui-resizable-handle").each(function(){$(this).remove();});
+				$(".objectOL").removeClass("ui-resizable ui-resizable-autohide ui-draggable ui-draggable-handle selectEOL");
+				editor.setValue($("#workingPagePreset").html().trim().replaceAll("><",">\n<"));
+				
+				$.post("./<?=$fname?>?mode=saveFile",
+				{
+					file:editor.getValue(),
+					filename:$("#FNAME").val()
+				}).done(function(e){alert(e)});
+				
+				$.get("./<?=$fname?>?mode=getFileList").done(function(e){
+					$("#filelist").html(e);
+				});
+			}
+			
 			$("#applyBTN").click(function()
 			{
 				$('#QED').css('display','none'); 
