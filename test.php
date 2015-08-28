@@ -18,13 +18,17 @@ else
 	
 if($_GET['mode'] == "saveFile")
 {
-	$filedata = $docDefault.$fileinter.$docDefaultEnd;
+	$filedata = $docDefault.html_entity_decode(str_replace("\\", "", $fileinter)).$docDefaultEnd;
 	$filename = $_POST["filename"];
 	
 	$log_file = fopen($sdir.str_replace(".html","",$filename).".html", "w"); 
 
 	fwrite($log_file, $filedata);  
 	fclose($log_file);
+	
+	echo $filedata;
+	
+	exit();
 }
 else if($_GET['mode'] == "getFileList")
 {
@@ -33,7 +37,7 @@ else if($_GET['mode'] == "getFileList")
 	{
 		if($val == "." || $val == "..") continue;
 		?>
-<div class="flist"><?=$val?></div>
+<div class="flist" onclick="$('#FNAME').val('<?=$val?>'); $('#FNAME2').val('<?=$val?>');"><?=$val?></div>
 		<?
 	}
 	exit();
@@ -42,7 +46,7 @@ else if($_GET['mode'] == "getFile")
 {
 	$fopen = fopen($sdir.$_GET['filename'],"rb");
 	$cont = fread($fopen, filesize($sdir.$_GET['filename']));
-	echo $cont;
+	echo str_replace($docDefaultEnd, "", str_replace($docDefault, "", $cont));
 	fclose($fopen);
 	exit();
 }
@@ -111,7 +115,7 @@ else if($_GET['mode'] == "getFile")
 		</style>
 	</head>
 	<body>
-		<div id="QED" style="position:fixed; width:1000px; left:50%; top:100px; bottom:100px; background:#FFF; z-index:99999999999999; margin-left:-500px; box-shadow:2px 2px 0px #5AF,-2px -2px 0px #5AF, -2px 2px 0px #5AF, 2px -2px 0px #5AF; display:none;">
+		<div id="QED2" style="position:fixed; width:1000px; left:50%; top:100px; bottom:100px; background:#FFF; z-index:99999999999999; margin-left:-500px; box-shadow:2px 2px 0px #5AF,-2px -2px 0px #5AF, -2px 2px 0px #5AF, 2px -2px 0px #5AF; display:none;">
 			<div id="quickEditor" style="background:#FFF; resize:none; border:none;"></div>
 			<script>
 				var htmlQuickEditor = ace.edit("quickEditor");
@@ -135,15 +139,15 @@ else if($_GET['mode'] == "getFile")
 				editor.getSession().setMode("lib/ace/mode/html");
 			</script>
 		</div>
-		<div id="htmlPreview" style="position:fixed; right:300px; left:0px; top:40px; bottom:30px; background:#FFF; display:none;">
+		<div id="htmlPreview" style="position:fixed; right:300px; left:0px; top:40px; bottom:30px; background:#FFF; display:none; z-index:9999999999999;">
 			<div id="previewPagePreset">
 			
 			</div>
 		</div>
-		<div id="saveAs" style="position:fixed; left:50%; top:50%; width:600px; height:340px; margin-top:-170px; margin-left:-300px; box-shadow:2px 2px 0px #000, -2px -2px 0px #000, -2px 2px 0px #000, 2px -2px 0px #000; z-index:1000000000;">
+		<div id="saveAs" style="position:fixed; left:50%; top:50%; width:600px; height:340px; margin-top:-170px; margin-left:-300px; box-shadow:2px 2px 0px #000, -2px -2px 0px #000, -2px 2px 0px #000, 2px -2px 0px #000; z-index:1000000000; display:none;">
 			<div style="height:30px; background:#EEE; line-height:30px; text-align:center;">
 				Save Project
-				<div style="float:right; width:30px; height:30px; display:inline-block; cursor:default; text-align:center;">
+				<div style="float:right; width:30px; height:30px; display:inline-block; cursor:default; text-align:center;" onclick="$('#saveAs').css('display','none');">
 					X
 				</div>
 			</div>
@@ -163,8 +167,36 @@ else if($_GET['mode'] == "getFile")
 			</div>
 			</div>
 			<div style="height:20px; background:#EEE; line-height:20px; padding:5px;">
-				<input id="FNAME" type="text" class="PRESETINPUT" style="width:500px;"/>
+				<input id="FNAME2" type="text" class="PRESETINPUT" style="width:500px;"/>
 				<button id="FFF" onclick="saveProc();">save</button>
+			</div>
+		</div>
+		<div id="loadFile" style="position:fixed; left:50%; top:50%; width:600px; height:340px; margin-top:-170px; margin-left:-300px; box-shadow:2px 2px 0px #000, -2px -2px 0px #000, -2px 2px 0px #000, 2px -2px 0px #000; z-index:1000000000; display:none;">
+			<div style="height:30px; background:#EEE; line-height:30px; text-align:center;">
+				Load Project
+				<div style="float:right; width:30px; height:30px; display:inline-block; cursor:default; text-align:center;" onclick="$('#loadFile').css('display','none');">
+					X
+				</div>
+			</div>
+			<script>
+				<?
+					$fname = __FILE__;
+					$fname = substr($fname, strrpos($fname, "\\")+1);
+				?>
+				$.get("./<?=$fname?>?mode=getFileList").done(function(e)
+				{
+					$("#loadfilelist").html(e);
+				});
+			</script>
+			<div style="height:280px;">
+			<div style="background:#FFF;float:left; height:280px; width:420px;" id="loadfilelist">
+			</div>
+			<div style="width:180px; float:left; height:280px; background:#FFF;">
+			</div>
+			</div>
+			<div style="height:20px; background:#EEE; line-height:20px; padding:5px;">
+				<input id="FNAME" type="text" class="PRESETINPUT" style="width:500px;"/>
+				<button onclick="loadProc();">load</button>
 			</div>
 		</div>
 		<div id="headTitleBar" style="position:fixed; left:0px; top:0px; right:0px; height:30px; padding:5px; margin:0px; background:#EEE;">
@@ -211,8 +243,8 @@ else if($_GET['mode'] == "getFile")
 			<span id="TB3" class="tabClass" style="right:301px;" onclick="tabChange('3');">
 				Preview
 			</span>
-			<span class="SLBtn">LOAD</span>
-			<span class="SLBtn">SAVE</span>
+			<span class="SLBtn" onclick="$('#loadFile').css('display','block');$('#saveAs').css('display','none');">LOAD</span>
+			<span class="SLBtn" onclick="$('#saveAs').css('display','block');$('#loadFile').css('display','none');">SAVE</span>
 		</div>
 		<div style="position:fixed; right:0px; top:40px; height:20px; width:290px; background:#DDD; padding:5px;">
 			<select id="ELEMS" class="PRESETINPUT" style="width:290px;" onChanged="">
@@ -418,22 +450,45 @@ else if($_GET['mode'] == "getFile")
 			$("#TGBDRS").val("");
 			
 			$("#TGTXSIZE").val("");
-			
-				$(function() {
-					$('#WORKAREA').ruler({
-						vRuleSize: 18,
-						hRuleSize: 18,
-						showCrosshair : false,
-						showMousePos: true
-					});    
-				});
+		
+			$(function() {
+				$('#WORKAREA').ruler({
+					vRuleSize: 18,
+					hRuleSize: 18,
+					showCrosshair : false,
+					showMousePos: true
+				});    
+			});
 			
 			var selectedElement = "";
 			var tmpIDCOUNT = 0;
 			var curTab = 1;
 			var targetID = "";
+			
+			function loadProc()
+			{
+				$("#saveAs").css("display","none");
+				
+				$.get("./<?=$fname?>?mode=getFile&filename="+$("#FNAME").val()).done(function(e){
+					$("#workingPagePreset").html(e);
+					
+					$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
+					$(".objectOL").find(".ui-resizable-handle").each(function(){$(this).remove();});
+					$(".objectOL").removeClass("ui-resizable ui-resizable-autohide ui-draggable ui-draggable-handle selectEOL");
+					editor.setValue($("#workingPagePreset").html().trim().replaceAll("><",">\n<"));
+					
+					countElement();
+				});
+				
+				$("#saveAs").css("display","none");
+				$("#loadFile").css("display","none");
+				
+			}
+			
 			function saveProc()
 			{
+				$("#loadFile").css("display","none");
+				
 				$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
 				$(".objectOL").find(".ui-resizable-handle").each(function(){$(this).remove();});
 				$(".objectOL").removeClass("ui-resizable ui-resizable-autohide ui-draggable ui-draggable-handle selectEOL");
@@ -442,12 +497,19 @@ else if($_GET['mode'] == "getFile")
 				$.post("./<?=$fname?>?mode=saveFile",
 				{
 					file:editor.getValue(),
-					filename:$("#FNAME").val()
+					filename:$("#FNAME2").val()
 				}).done(function(e){alert(e)});
 				
 				$.get("./<?=$fname?>?mode=getFileList").done(function(e){
 					$("#filelist").html(e);
 				});
+				
+					jqUIactive();
+					
+				$("#workingPagePreset").html(editor.getValue());
+				
+				$("#saveAs").css("display","none");
+				$("#loadFile").css("display","none");
 			}
 			
 			$("#applyBTN").click(function()
@@ -462,15 +524,7 @@ else if($_GET['mode'] == "getFile")
 				
 				
 				$("#workingPagePreset").html(editor.getValue());
-				$(".objectOL").resizable
-				({
-					autoHide:true,
-					handles:"all"
-				}).draggable
-				({
-					snap: true,
-					snapMode: "inner"					
-				});
+					jqUIactive();
 			});
 			
 			$("#WORKAREA").dblclick(function(event)
@@ -584,7 +638,7 @@ else if($_GET['mode'] == "getFile")
 					
 					$("#TGTXSIZE").val("");
 				}
-				else if(DT.indexOf("tmpID") > -1)
+				else if(DT != undefined)
 				{
 					//REMOVE PROC
 					$("*").removeClass("selectEOL");
@@ -638,7 +692,7 @@ else if($_GET['mode'] == "getFile")
 				var sel = $("#ELEMS").val();
 				$("#ELEMS").html('<option value="">Element 선택</option>');
 				chd.each(function(){
-					if($(this).attr("id") != "")
+					if($(this).attr("id") != undefined)
 					{
 						var elem = $('<option>');
 						elem.attr("value",$(this).attr("id"));
@@ -648,6 +702,18 @@ else if($_GET['mode'] == "getFile")
 					}
 					
 					if(sel == $(this).attr("id")) $("#ELEMS").val($(this).attr("id")).attr("selected", "selected");
+				});
+			}
+			
+			function jqUIactive()
+			{
+				$(".objectOL").resizable
+				({
+					autoHide:true,
+					handles:"all"
+				}).draggable
+				({
+					
 				});
 			}
 			
@@ -661,15 +727,9 @@ else if($_GET['mode'] == "getFile")
 					if(curTab == 2)
 					{
 						$("#workingPagePreset").html(editor.getValue());
-						$(".objectOL").resizable
-						({
-							autoHide:true,
-							handles:"all"
-						}).draggable
-						({
-							
-						});
 					}
+					 
+					jqUIactive();
 					
 					curTab = 1;
 					$("#TB1").addClass("tabActive");
@@ -772,9 +832,7 @@ else if($_GET['mode'] == "getFile")
 				
 				elem.resizable
 				({
-					autoHide:true,
-					handles:"all",
-					grid:true
+					handles:"all"
 				}).draggable
 				({
 					
