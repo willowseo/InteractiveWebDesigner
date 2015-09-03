@@ -112,6 +112,8 @@ else if($_GET['mode'] == "getFile")
 			
 			.flist {padding:3px; cursor:default; padding-left:28px;}
 			.flist:hover {box-shadow:inset 1px 1px 0px rgba(55,121,241,0.3), inset -1px -1px 0px rgba(55,121,241,0.3); background:rgba(55,121,241,0.1);}
+			
+			.inputType input{background:transparent;}
 		</style>
 	</head>
 	<body>
@@ -247,11 +249,17 @@ else if($_GET['mode'] == "getFile")
 			<span class="SLBtn" onclick="$('#saveAs').css('display','block');$('#loadFile').css('display','none');">SAVE</span>
 		</div>
 		<div style="position:fixed; right:0px; top:40px; height:20px; width:290px; background:#DDD; padding:5px;">
-			<select id="ELEMS" class="PRESETINPUT" style="width:290px;" onChanged="">
+			<select id="ELEMS" class="PRESETINPUT" style="width:290px;" onchange="clickEventC($(this).val());">
 				<option value="">Element 선택</option>
 			</select>
 		</div>
 		<div style="position:fixed; right:0px; top:70px; bottom:30px; background:#DDD; width:300px; overflow:auto;">
+			<div class="groupBox">
+				<div class="groupBoxTitle">innerHTML</div>
+				<div class="settingClassDiv" style="height:100px;">
+					<textarea id="innerHTMLedit" disabled="disabled" style="resize:none; height:100%; width:100%;"></textarea>
+				</div>
+			</div>
 			<div class="groupBox">
 				<div class="groupBoxTitle">Position & Size</div>
 				<div class="settingClassDiv">
@@ -289,8 +297,8 @@ else if($_GET['mode'] == "getFile")
 					<input type="text" id="TGTXSIZE" class="PRESETINPUT" onchange="$('#'+$('#ELEMS').val()).css('font-size',$(this).val().replace('px','') +'px');"/>
 				</div>
 				<div class="settingClassDiv">
-					<Span class="spTextC">Size</span>
-					<input type="text" id="TGTXLHEIGHT" class="PRESETINPUT" onchange="$('#'+$('#ELEMS').val()).css('font-size',$(this).val().replace('px','') +'px');"/>
+					<Span class="spTextC">line-height</span>
+					<input type="text" id="TGTXLHEIGHT" class="PRESETINPUT" onchange="$('#'+$('#ELEMS').val()).css('line-height',$(this).val().replace('px','') +'px');"/>
 				</div>
 			</div>
 			<div class="groupBox">
@@ -597,6 +605,58 @@ else if($_GET['mode'] == "getFile")
 				}
 			});
 			
+			function clickEventC(DT)
+			{
+				var dtjq = $('#'+DT);
+				
+				//REMOVE PROC
+				$("*").removeClass("selectEOL");
+				$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
+				
+				//ADD PROC
+				$("#"+DT).addClass("selectEOL");
+				
+				$("#"+DT).append($('<div>').addClass('SL SL_NE'));
+				$("#"+DT).append($('<div>').addClass('SL SL_N'));
+				$("#"+DT).append($('<div>').addClass('SL SL_NW'));
+				$("#"+DT).append($('<div>').addClass('SL SL_E'));
+				$("#"+DT).append($('<div>').addClass('SL SL_W'));
+				$("#"+DT).append($('<div>').addClass('SL SL_SE'));
+				$("#"+DT).append($('<div>').addClass('SL SL_S'));
+				$("#"+DT).append($('<div>').addClass('SL SL_SW'));
+				
+				$("#ELEMS").val(DT).attr("selected", "selected");
+				
+				//
+				$("#TGMSELCLASS").val(dtjq.attr('class'));
+				
+				$("#TGTOP").val(dtjq.css('top'));
+				$("#TGLFET").val(dtjq.css('left'));
+				$("#TGWIDTH").val(dtjq.css('width'));
+				$("#TGHEIGHT").val(dtjq.css('height'));
+				$("#TGBGCOLOR").val(dtjq.css('background-color'));
+				
+				$("#TGMTOP").val(dtjq.css('margin-top'));
+				$("#TGMLEFT").val($("#"+DT).css('margin-left'));
+				$("#TGMRIGHT").val($("#"+DT).css('margin-right'));
+				$("#TGMBOTTOM").val($("#"+DT).css('margin-bottom'));
+				
+				$("#TGPTOP").val($("#"+DT).css('padding-top'));
+				$("#TGPLEFT").val($("#"+DT).css('padding-left'));
+				$("#TGPRIGHT").val($("#"+DT).css('padding-right'));
+				$("#TGPBOTTOM").val($("#"+DT).css('padding-bottom'));
+				
+				$("#TGTXSIZE").val($("#"+DT).css('font-size'));
+				$("#TGTXCOLOR").val($("#"+DT).css('color'));
+				$("#TGTXLHEIGHT").val($("#"+DT).css('line-height'));
+				
+				alert(dtjq.children().length);
+				if(dtjq.children().length <= 0)
+				{
+					$("#innerHTMLedit").val(dtjq.html());
+				}
+			}
+			
 			$("#WORKAREA").on("mousedown",function(e)
 			{
 				var DT = e.target.id;
@@ -640,44 +700,7 @@ else if($_GET['mode'] == "getFile")
 				}
 				else if(DT != undefined)
 				{
-					//REMOVE PROC
-					$("*").removeClass("selectEOL");
-					$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
-					
-					//ADD PROC
-					$("#"+DT).addClass("selectEOL");
-					
-					$("#"+DT).append($('<div>').addClass('SL SL_NE'));
-					$("#"+DT).append($('<div>').addClass('SL SL_N'));
-					$("#"+DT).append($('<div>').addClass('SL SL_NW'));
-					$("#"+DT).append($('<div>').addClass('SL SL_E'));
-					$("#"+DT).append($('<div>').addClass('SL SL_W'));
-					$("#"+DT).append($('<div>').addClass('SL SL_SE'));
-					$("#"+DT).append($('<div>').addClass('SL SL_S'));
-					$("#"+DT).append($('<div>').addClass('SL SL_SW'));
-					
-					$("#ELEMS").val(DT).attr("selected", "selected");
-					
-					//
-					$("#TGMSELCLASS").val($("#"+DT).attr('class'));
-					
-					$("#TGTOP").val($("#"+DT).css('top'));
-					$("#TGLFET").val($("#"+DT).css('left'));
-					$("#TGWIDTH").val($("#"+DT).css('width'));
-					$("#TGHEIGHT").val($("#"+DT).css('height'));
-					$("#TGBGCOLOR").val($("#"+DT).css('background-color'));
-					
-					$("#TGMTOP").val($("#"+DT).css('margin-top'));
-					$("#TGMLEFT").val($("#"+DT).css('margin-left'));
-					$("#TGMRIGHT").val($("#"+DT).css('margin-right'));
-					$("#TGMBOTTOM").val($("#"+DT).css('margin-bottom'));
-					
-					$("#TGPTOP").val($("#"+DT).css('padding-top'));
-					$("#TGPLEFT").val($("#"+DT).css('padding-left'));
-					$("#TGPRIGHT").val($("#"+DT).css('padding-right'));
-					$("#TGPBOTTOM").val($("#"+DT).css('padding-bottom'));
-					
-					$("#TGTXSIZE").val($("#"+DT).css('font-size'));
+					clickEventC(DT);
 				}
 			});
 			
@@ -696,7 +719,6 @@ else if($_GET['mode'] == "getFile")
 					{
 						var elem = $('<option>');
 						elem.attr("value",$(this).attr("id"));
-						elem.attr("onclick","selectElement($('#'+$(this).val()));");
 						elem.html($(this).attr("id"));
 						$("#ELEMS").append(elem);
 					}
@@ -807,6 +829,7 @@ else if($_GET['mode'] == "getFile")
 					inputv.attr("type",type);
 					
 					elem.addClass('s-input-'+type);
+					elem.addClass('inputType');
 					elem.attr("data-indisable","true");
 					elem.append(inputv);
 				}
