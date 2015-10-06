@@ -114,6 +114,28 @@ else if($_GET['mode'] == "getFile")
 			.flist:hover {box-shadow:inset 1px 1px 0px rgba(55,121,241,0.3), inset -1px -1px 0px rgba(55,121,241,0.3); background:rgba(55,121,241,0.1);}
 			
 			.inputType input{background:transparent;}
+			
+			.cssMGMT
+			{
+				border:1px solid #DDD;
+				border-radius:5px;
+				margin-bottom:5px;
+				padding:5px;
+				cursor:default;
+			}
+			
+			.cssmgmtDel
+			{
+				width:20px;
+				text-align:center;
+				color:#F00;
+			}
+			.cssmgmtDel:hover
+			{
+				border-radius:10px;
+				background:#F00;
+				color:#FFF;
+			}
 		</style>
 	</head>
 	<body>
@@ -247,6 +269,7 @@ else if($_GET['mode'] == "getFile")
 			</span>
 			<span class="SLBtn" onclick="$('#loadFile').css('display','block');$('#saveAs').css('display','none');">LOAD</span>
 			<span class="SLBtn" onclick="$('#saveAs').css('display','block');$('#loadFile').css('display','none');">SAVE</span>
+			<span class="SLBtn" onclick="if($('#cssmanagement').css('display') == 'block'){$('#cssmanagement').css('display','none')}else{$('#cssmanagement').css('display','block');}">CSS Manage	</span>
 		</div>
 		<div style="position:fixed; right:0px; top:40px; height:20px; width:290px; background:#DDD; padding:5px;">
 			<select id="ELEMS" class="PRESETINPUT" style="width:290px;" onchange="clickEventC($(this).val());">
@@ -257,7 +280,8 @@ else if($_GET['mode'] == "getFile")
 			<div class="groupBox">
 				<div class="groupBoxTitle">innerHTML</div>
 				<div class="settingClassDiv" style="height:100px;">
-					<textarea id="innerHTMLedit" disabled="disabled" style="resize:none; height:100%; width:100%;"></textarea>
+					<textarea id="innerHTMLedit" style="resize:none; height:80px; width:100%;" ></textarea>
+					<input type="button" onclick="$('#'+$('#ELEMS').val()).html($('#innerHTMLedit').val());" value="Html Change" />
 				</div>
 			</div>
 			<div class="groupBox">
@@ -421,7 +445,74 @@ else if($_GET['mode'] == "getFile")
 				</div>
 			</div>
 		</div>
+		<div id="cssmanagement" style="position:fixed; right:10px; top:40px; background:#FFF; width:400px; height:auto; padding:10px; padding-bottom:5px; box-shadow:0px 0px 5px rgba(0,0,0,.5); z-index:99999999999999; display:none;">
+			<script>
+			
+				function cssRmv(str)
+				{
+					$('head').children().each(function()
+					{
+						if($(this).attr('href') == str)
+						{
+							$(this).remove();
+						}	
+					});
+				}
+				
+				$("head").children().each(function()
+				{
+					var tmp =  $('<div>');
+					//<link rel="stylesheet" type="text/css" href="ruler/ruler.css" >
+					
+					tmp.html($(this).attr("href"));
+					tmp.prepend($('<span>').css({'float':'right'}).html('×').addClass('cssmgmtDel').attr("onclick","$(this).parent().remove(); cssRmv('"+$(this).attr('href')+"');"));
+					tmp.addClass("cssMGMT");
+					
+					if($(this).attr("rel") == "stylesheet" && $(this).attr("href").indexOf("use.edgefonts.net") == -1)
+					{
+						$("#cssmanagement").prepend(tmp);
+					}
+				});
+				
+				function addCssFile(csslink)
+				{
+					$.get(csslink).done(function()
+					{
+						var cnt = 0;
+						$("head").children().each(function()
+						{
+							if($(this).attr("rel") == "stylesheet" && $(this).attr("href").indexOf("use.edgefonts.net") == -1)
+							{
+								cnt++;
+							}
+						});
+						
+						if(cnt <= 0)
+						{
+							var tmp =  $('<div>');
+							
+							tmp.html(csslink);
+							tmp.prepend($('<span>').css({'float':'right'}).html('×').addClass('cssmgmtDel').attr("onclick","$(this).parent().remove(); cssRmv('"+csslink+"');"));
+							tmp.addClass("cssMGMT");
+							
+							$("#cssmanagement").prepend(tmp);
+							var tmp2 = $('<link>').attr({'rel':'stylesheet', 'href': csslink,'type':'text/css'});
+							$('head').append(tmp2);
+						}
+					});
+				}
+			</script>
+			<div style="margin-bottom:5px;">
+				<input type="text" id="cssmgmtval" style="width:300px; border:none; background:#EEE; height:20px;" /> <input type="button" onclick="addCssFile($('#cssmgmtval').val());" value="add" style="height:20px; border:none; background:#EEE; width:90px;"/>
+			</div>
+		</div>
 		<script>
+			function changevalue()
+			{
+				return '<div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-n"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-e"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-s"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-w"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-sw"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-ne"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-nw"></div>';
+				
+			}
+			$("#innerHTMLedit").val("");
 			
 			$("#PREWIDTH").val("120");
 			$("#PREHEIGHT").val("24");
@@ -459,6 +550,7 @@ else if($_GET['mode'] == "getFile")
 			
 			$("#TGTXSIZE").val("");
 		
+			/*
 			$(function() {
 				$('#WORKAREA').ruler({
 					vRuleSize: 18,
@@ -467,6 +559,7 @@ else if($_GET['mode'] == "getFile")
 					showMousePos: true
 				});    
 			});
+			*/
 			
 			var selectedElement = "";
 			var tmpIDCOUNT = 0;
@@ -490,7 +583,6 @@ else if($_GET['mode'] == "getFile")
 				
 				$("#saveAs").css("display","none");
 				$("#loadFile").css("display","none");
-				
 			}
 			
 			function saveProc()
@@ -613,55 +705,81 @@ else if($_GET['mode'] == "getFile")
 				$("*").removeClass("selectEOL");
 				$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
 				
-				//ADD PROC
-				$("#"+DT).addClass("selectEOL");
+				dtjq.children(".SL").each(function(){$(this).remove();});
 				
-				$("#"+DT).append($('<div>').addClass('SL SL_NE'));
-				$("#"+DT).append($('<div>').addClass('SL SL_N'));
-				$("#"+DT).append($('<div>').addClass('SL SL_NW'));
-				$("#"+DT).append($('<div>').addClass('SL SL_E'));
-				$("#"+DT).append($('<div>').addClass('SL SL_W'));
-				$("#"+DT).append($('<div>').addClass('SL SL_SE'));
-				$("#"+DT).append($('<div>').addClass('SL SL_S'));
-				$("#"+DT).append($('<div>').addClass('SL SL_SW'));
+				// alert(dtjq.children().length);
+				var cnt = 0;
+				dtjq.children().each
+				(function(){
+					//alert($(this).attr("id"));
+					if($(this).attr("id") != undefined)
+						cnt ++;
+				});
+				//alert(cnt);
+				//$("#innerHTMLedit").val(cnt);
+				
+				$("#innerHTMLedit").html(" ");
+				if(cnt == 0)
+				{
+					$("#innerHTMLedit").val(dtjq.html());
+					//$("#innerHTMLedit").val("TEST");
+					/* FF */
+					$("#innerHTMLedit").val($("#innerHTMLedit").val().toString().replace('<div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-n"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-e"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-s"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-w"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-sw"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-ne"></div><div style="z-index: 1; display: block;" class="ui-resizable-handle ui-resizable-nw"></div>'));
+					
+					/* IE */
+					$("#innerHTMLedit").val($("#innerHTMLedit").val().toString().replace('<div class="ui-resizable-handle ui-resizable-n" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-e" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-s" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-w" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-sw" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-ne" style="display: block; z-index: 1;"></div><div class="ui-resizable-handle ui-resizable-nw" style="display: block; z-index: 1;"></div>'));
+					$("#innerHTMLedit").val($("#innerHTMLedit").val().toString().replace("undefined",""));
+					
+					/* GC */
+					$("#innerHTMLedit").val($("#innerHTMLedit").val().toString().replace('<div class="ui-resizable-handle ui-resizable-n" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 1; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 1; display: block;"></div>'));
+					$("#innerHTMLedit").val($("#innerHTMLedit").val().toString().replace("undefined",""));
+				}
+				
+				//ADD PROC
+				dtjq.addClass("selectEOL");
+				
+				dtjq.append($('<div>').addClass('SL SL_NE'));
+				dtjq.append($('<div>').addClass('SL SL_N'));
+				dtjq.append($('<div>').addClass('SL SL_NW'));
+				dtjq.append($('<div>').addClass('SL SL_E'));
+				dtjq.append($('<div>').addClass('SL SL_W'));
+				dtjq.append($('<div>').addClass('SL SL_SE'));
+				dtjq.append($('<div>').addClass('SL SL_S'));
+				dtjq.append($('<div>').addClass('SL SL_SW'));
 				
 				$("#ELEMS").val(DT).attr("selected", "selected");
 				
 				//
 				$("#TGMSELCLASS").val(dtjq.attr('class'));
 				
-				$("#TGTOP").val(dtjq.css('top'));
-				$("#TGLFET").val(dtjq.css('left'));
-				$("#TGWIDTH").val(dtjq.css('width'));
-				$("#TGHEIGHT").val(dtjq.css('height'));
+				$("#TGTOP").val(dtjq.css('top').replace('px',''));
+				$("#TGLFET").val(dtjq.css('left').replace('px',''));
+				$("#TGWIDTH").val(dtjq.css('width').replace('px',''));
+				$("#TGHEIGHT").val(dtjq.css('height').replace('px',''));
 				$("#TGBGCOLOR").val(dtjq.css('background-color'));
 				
-				$("#TGMTOP").val(dtjq.css('margin-top'));
-				$("#TGMLEFT").val($("#"+DT).css('margin-left'));
-				$("#TGMRIGHT").val($("#"+DT).css('margin-right'));
-				$("#TGMBOTTOM").val($("#"+DT).css('margin-bottom'));
+				$("#TGMTOP").val(dtjq.css('margin-top').replace('px',''));
+				$("#TGMLEFT").val($("#"+DT).css('margin-left').replace('px',''));
+				$("#TGMRIGHT").val($("#"+DT).css('margin-right').replace('px',''));
+				$("#TGMBOTTOM").val($("#"+DT).css('margin-bottom').replace('px',''));
 				
-				$("#TGPTOP").val($("#"+DT).css('padding-top'));
-				$("#TGPLEFT").val($("#"+DT).css('padding-left'));
-				$("#TGPRIGHT").val($("#"+DT).css('padding-right'));
-				$("#TGPBOTTOM").val($("#"+DT).css('padding-bottom'));
+				$("#TGPTOP").val($("#"+DT).css('padding-top').replace('px',''));
+				$("#TGPLEFT").val($("#"+DT).css('padding-left').replace('px',''));
+				$("#TGPRIGHT").val($("#"+DT).css('padding-right').replace('px',''));
+				$("#TGPBOTTOM").val($("#"+DT).css('padding-bottom').replace('px',''));
 				
-				$("#TGTXSIZE").val($("#"+DT).css('font-size'));
+				$("#TGTXSIZE").val($("#"+DT).css('font-size').replace('px',''));
 				$("#TGTXCOLOR").val($("#"+DT).css('color'));
-				$("#TGTXLHEIGHT").val($("#"+DT).css('line-height'));
+				$("#TGTXLHEIGHT").val($("#"+DT).css('line-height').replace('px',''));
 				
-				alert(dtjq.children().length);
-				if(dtjq.children().length <= 0)
-				{
-					$("#innerHTMLedit").val(dtjq.html());
-				}
+				dtjq.resizable().draggable();
 			}
 			
 			$("#WORKAREA").on("mousedown",function(e)
 			{
 				var DT = e.target.id;
 				
-				if(DT == "WORKAREA")
+				if(DT == "WORKAREA" || DT == "workingPagePreset")
 				{
 					$("#workingPagePreset").find(".SL").each(function(){$(this).remove();});
 					$("*").removeClass("selectEOL");
